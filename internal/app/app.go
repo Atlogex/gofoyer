@@ -1,27 +1,34 @@
 package app
 
 import (
-	"atlogex/gofoyer/internal/grpc/auth"
-	"google.golang.org/grpc"
+	grpcapp "atlogex/gofoyer/internal/app/grpc"
 	"log/slog"
 )
 
 type App struct {
-	log        *slog.Logger
-	GRPCServer *grpc.Server
-	port       int
-	tokenTTL   string
+	//log        *slog.Logger
+	GRPCServer *grpcapp.App
+	//port       int
+	//tokenTTL   string
 }
 
-func New(log *slog.Logger, gRPCServer *grpc.Server, port int, tokenTTL string) *App {
+func New(
+	log *slog.Logger,
+	//gRPCServer *grpc.Server,
+	port int,
+	grpcPath string,
+	tokenTTL string,
+) *App {
 
-	GRPCServer := grpc.NewServer()
-	auth.Register(gRPCServer)
+	//GRPCServer := grpc.NewServer()
+	//auth.Register(gRPCServer)
+
+	grpcApp := grpcapp.New(log, port)
 
 	return &App{
-		log:        log,
-		GRPCServer: GRPCServer,
-		port:       port,
-		tokenTTL:   tokenTTL,
+		//log:        log,
+		GRPCServer: grpcApp,
+		//port:       port,
+		//tokenTTL:   tokenTTL,
 	}
 }

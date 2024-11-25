@@ -11,9 +11,9 @@ import (
 const emptyValue = 0
 
 type Auth interface {
-	Login(ctx context.Context, email string, password string, appId int) (token string, err error)
-	RegisterNewUser(ctx context.Context, email string, password string) (userId int64, err error)
-	IsAdmin(ctx context.Context, userID int64) (bool, error)
+	Login(ctx context.Context, email string, password string, appID int) (token string, err error)
+	RegisterNewUser(ctx context.Context, email string, password string) (userID int64, err error)
+	IsAdmin(ctx context.Context, userID bool) (bool, error)
 }
 
 type serverAPI struct {
@@ -21,13 +21,13 @@ type serverAPI struct {
 	auth Auth
 }
 
-func Register(gRPC *grpc.Server, auth Auth) {
-	ssov1.RegisterAuthServer(gRPC, &serverAPI{auth: auth})
+func Register(GRPCServer *grpc.Server, auth Auth) {
+	ssov1.RegisterAuthServer(GRPCServer, &serverAPI{auth: auth})
 }
 
 func (s *serverAPI) Login(
 	ctx context.Context,
-	req ssov1.LoginRequest,
+	req *ssov1.LoginRequest,
 ) (*ssov1.LoginResponse, error) {
 
 	// Add validator method here or use library
@@ -67,7 +67,7 @@ func validateAuthParams(req *ssov1.LoginRequest, ValidateAppId bool) (err error)
 
 func (s *serverAPI) Register(
 	ctx context.Context,
-	req ssov1.RegisterRequest,
+	req *ssov1.RegisterRequest,
 ) (*ssov1.RegisterResponse, error) {
 
 	panic("implement me")
@@ -75,7 +75,7 @@ func (s *serverAPI) Register(
 
 func (s *serverAPI) IsAdmin(
 	ctx context.Context,
-	req ssov1.IsAdminRequest,
+	req *ssov1.IsAdminRequest,
 ) (*ssov1.IsAdminResponse, error) {
 
 	panic("implement me")

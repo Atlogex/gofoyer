@@ -23,6 +23,7 @@ func main() {
 	logger := setupLogger(cfg.Env)
 	logger.Error("Start", slog.String("env", cfg.Env))
 
+	//application := app.New(logger, cfg.GRPCPort, cfg.StoragePath, cfg.TokenTTL)
 	application := app.New(logger, cfg.GRPCPort, cfg.StoragePath, cfg.TokenTTL)
 
 	go application.GRPCServer.MustRun()
