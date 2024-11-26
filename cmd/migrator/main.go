@@ -11,10 +11,12 @@ import (
 )
 
 func main() {
+	const databaseName = "gofoyer.db"
 	var storagePath, migrationsPath, migrationsTable string
 
 	dir, _ := filepath.Abs("")
-	defaultDbPath := filepath.Join(dir, "database", "gofoyer.db")
+	fmt.Println(dir)
+	defaultDbPath := filepath.Join(dir, "database", databaseName)
 	defaultMigrationPath := filepath.Join(dir, "migrations")
 
 	flag.StringVar(&storagePath, "storage_path", defaultDbPath, "path to storage file")
@@ -23,12 +25,11 @@ func main() {
 
 	flag.Parse()
 
-	fmt.Println("DbPath", storagePath)
-	fmt.Println("MigrationPath", migrationsPath)
+	fmt.Println("storagePath", storagePath)
+	fmt.Println("migrationsPath", migrationsPath)
 
 	m, err := migrate.New(
-		//"file://"+filepath.Join(dir, "database", "gofoyer.db"),
-		"file://"+dir,
+		"file://"+migrationsPath,
 		fmt.Sprintf("sqlite3://%s?x-migrations-table=%s", storagePath, migrationsTable),
 	)
 	if err != nil {

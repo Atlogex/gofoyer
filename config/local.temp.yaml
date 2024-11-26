@@ -1,0 +1,7 @@
+env: "local"
+storage_path: "./storage/gofoyer.db"
+token_ttl: "1h"
+log_level: "info"
+grpc:
+  port: 8044
+  timeout: 1h
