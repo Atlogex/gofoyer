@@ -11,7 +11,7 @@ type Config struct {
 	StoragePath  string     `yaml:"storage_path" env-required:"./storage/gofoyer.db"`
 	GPRC         GRPCConfig `yaml:"gprc"`
 	TokenTTL     string     `yaml:"token_ttl" env-default:"1h"`
-	GRPCPort     int        `yaml:"grpc_port"`
+	GRPCPort     int        `yaml:"grpc_port" env-default:"8045"`
 	GRPCTimeout  string     `yaml:"grpc_timeout"`
 	GRPCMaxConns int        `yaml:"grpc_max_conns"`
 }

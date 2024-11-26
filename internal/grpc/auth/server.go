@@ -13,7 +13,7 @@ const emptyValue = 0
 type Auth interface {
 	Login(ctx context.Context, email string, password string, appID int) (token string, err error)
 	RegisterNewUser(ctx context.Context, email string, password string) (userID int64, err error)
-	IsAdmin(ctx context.Context, userID bool) (bool, error)
+	IsAdmin(ctx context.Context, userID int64) (bool, error)
 }
 
 type serverAPI struct {
@@ -51,14 +51,32 @@ func (s *serverAPI) Login(
 	}, nil
 }
 
-func validateAuthParams(req *ssov1.LoginRequest, ValidateAppId bool) (err error) {
+func validateRegisterParams(req *ssov1.RegisterRequest, ValidateAppId bool) (err error) {
 	if req.GetEmail() == "" {
 		return status.Error(codes.InvalidArgument, "email is required")
 	}
 	if req.GetPassword() == "" {
 		return status.Error(codes.InvalidArgument, "password is required")
 	}
-	if ValidateAppId && req.GetAppId() == emptyValue {
+
+	if ValidateAppId {
+
+		return validateAppId(req)
+	}
+
+	return nil
+}
+
+func validateIsAdminParams(req *ssov1.IsAdminRequest) (err error) {
+	if req.GetUserId() == emptyValue {
+		return status.Error(codes.InvalidArgument, "email is required")
+	}
+
+	return nil
+}
+
+func validateAppId(req) (err error) {
+	if req.GetAppId() == emptyValue {
 		return status.Error(codes.InvalidArgument, "app_id is required")
 	}
 
@@ -70,7 +88,18 @@ func (s *serverAPI) Register(
 	req *ssov1.RegisterRequest,
 ) (*ssov1.RegisterResponse, error) {
 
-	panic("implement me")
+	if validateRegisterParams(req, true) != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid auth params")
+	}
+
+	userID, err := s.auth.RegisterNewUser(ctx, req.GetEmail(), req.GetPassword())
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "register failed - internal error")
+	}
+
+	return &ssov1.RegisterResponse{
+		UserId: userID,
+	}, nil
 }
 
 func (s *serverAPI) IsAdmin(
@@ -78,5 +107,12 @@ func (s *serverAPI) IsAdmin(
 	req *ssov1.IsAdminRequest,
 ) (*ssov1.IsAdminResponse, error) {
 
-	panic("implement me")
+	isAdmin, err := s.auth.IsAdmin(ctx, req.GetUserId())
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "register failed - internal error isa")
+	}
+
+	return &ssov1.IsAdminResponse{
+		IsAdmin: isAdmin,
+	}, nil
 }
