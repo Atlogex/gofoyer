@@ -1,4 +1,4 @@
-package sqllite
+package sqlite
 
 import (
 	"atlogex/gofoyer/internal/domain/models"
@@ -15,10 +15,35 @@ type Storage struct {
 	db *sql.DB
 }
 
-func New(db *sql.DB) (*Storage, error) {
+// App returns app by id.
+func (s *Storage) App(ctx context.Context, id int) (models.App, error) {
+	const op = "storage.sqlite.App"
+
+	stmt, err := s.db.Prepare("SELECT id, name, secret FROM apps WHERE id = ?")
+	if err != nil {
+		return models.App{}, fmt.Errorf("%s: %w", op, err)
+	}
+
+	row := stmt.QueryRowContext(ctx, id)
+
+	var app models.App
+	err = row.Scan(&app.ID, &app.Name, &app.Secret)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return models.App{}, fmt.Errorf("%s: %w", op, storage.ErrAppNotFound)
+		}
+
+		return models.App{}, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return app, nil
+}
+
+func New(storagePath string) (*Storage, error) {
 	const operation = "storage.sqlite.New"
 
-	db, err := sql.Open("sqlite3", "file:gofoyer.db?_fk=true")
+	//db, err := sql.Open("sqlite3", "file:gofoyer.db?_fk=true")
+	db, err := sql.Open("sqlite3", "storagePath")
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database %s: %w", operation, err)
 	}

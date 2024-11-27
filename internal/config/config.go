@@ -4,16 +4,17 @@ import (
 	"flag"
 	"github.com/ilyakaznacheev/cleanenv"
 	"os"
+	"time"
 )
 
 type Config struct {
-	Env          string     `yaml:"env" env-required:"local"`
-	StoragePath  string     `yaml:"storage_path" env-required:"./storage/gofoyer.db"`
-	GPRC         GRPCConfig `yaml:"gprc"`
-	TokenTTL     string     `yaml:"token_ttl" env-default:"1h"`
-	GRPCPort     int        `yaml:"grpc_port" env-default:"8045"`
-	GRPCTimeout  string     `yaml:"grpc_timeout"`
-	GRPCMaxConns int        `yaml:"grpc_max_conns"`
+	Env          string        `yaml:"env" env-required:"local"`
+	StoragePath  string        `yaml:"storage_path" env-required:"./storage/gofoyer.db"`
+	GPRC         GRPCConfig    `yaml:"gprc"`
+	TokenTTL     time.Duration `yaml:"token_ttl" env-default:"1h"`
+	GRPCPort     int           `yaml:"grpc_port" env-default:"8045"`
+	GRPCTimeout  string        `yaml:"grpc_timeout"`
+	GRPCMaxConns int           `yaml:"grpc_max_conns"`
 }
 
 type GRPCConfig struct {
@@ -29,6 +30,10 @@ func MustLoad() *Config {
 		panic("config path is empty")
 	}
 
+	return MustLoadBypath(path)
+}
+
+func MustLoadBypath(path string) *Config {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		panic("config file does not exist - " + path)
 	}

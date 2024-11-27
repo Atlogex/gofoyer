@@ -3,9 +3,11 @@ module atlogex/gofoyer
 go 1.23.3
 
 require (
+	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/golang-migrate/migrate/v4 v4.18.1
 	github.com/ilyakaznacheev/cleanenv v1.5.0
+	github.com/mattn/go-sqlite3 v1.14.22
 	golang.org/x/crypto v0.27.0
 	google.golang.org/grpc v1.68.0
 	google.golang.org/protobuf v1.35.2
@@ -16,7 +18,6 @@ require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
-	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	golang.org/x/net v0.29.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect

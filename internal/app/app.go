@@ -2,33 +2,32 @@ package app
 
 import (
 	grpcapp "atlogex/gofoyer/internal/app/grpc"
+	"atlogex/gofoyer/internal/service/auth"
+	"atlogex/gofoyer/internal/storage/sqlite"
 	"log/slog"
+	"time"
 )
 
 type App struct {
-	//log        *slog.Logger
 	GRPCServer *grpcapp.App
-	//port       int
-	//tokenTTL   string
 }
 
 func New(
 	log *slog.Logger,
-	//gRPCServer *grpc.Server,
-	port int,
-	grpcPath string,
-	tokenTTL string,
+	grpcPort int,
+	storagePath string,
+	tokenTTL time.Duration,
 ) *App {
+	storage, err := sqlite.New(storagePath)
+	if err != nil {
+		panic(err)
+	}
 
-	//GRPCServer := grpc.NewServer()
-	//auth.Register(gRPCServer)
+	authService := auth.New(log, storage, storage, storage, tokenTTL)
 
-	grpcApp := grpcapp.New(log, port)
+	grpcApp := grpcapp.New(log, authService, grpcPort)
 
 	return &App{
-		//log:        log,
 		GRPCServer: grpcApp,
-		//port:       port,
-		//tokenTTL:   tokenTTL,
 	}
 }

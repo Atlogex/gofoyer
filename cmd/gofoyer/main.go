@@ -26,7 +26,9 @@ func main() {
 	//application := app.New(logger, cfg.GRPCPort, cfg.StoragePath, cfg.TokenTTL)
 	application := app.New(logger, cfg.GRPCPort, cfg.StoragePath, cfg.TokenTTL)
 
-	go application.GRPCServer.MustRun()
+	go func() {
+		application.GRPCServer.MustRun()
+	}()
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)

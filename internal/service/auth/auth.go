@@ -75,21 +75,21 @@ func (a Auth) Login(
 	user, err := a.userProvider.User(ctx, email)
 	if err != nil {
 		if errors.Is(err, storage.ErrUserNotFound) {
-			a.log.Warn("User not found", sl.Err(err))
+			a.log.Warn("User not found", err)
 		}
 
 		return "", fmt.Errorf("failed to get user %s: %w", operation, ErrInvalidCredentials)
 	}
 
 	if err := bcrypt.CompareHashAndPassword(user.PassHash, []byte(password)); err != nil {
-		a.log.Info("Invalid credentials", sl.Err(err))
+		a.log.Info("Invalid credentials", err)
 
 		return "", fmt.Errorf("failed to compare password %s: %w", operation, ErrInvalidCredentials)
 	}
 
 	app, err := a.appProvider.App(ctx, appID)
 	if err != nil {
-		a.log.Warn("App not found", sl.Err(err))
+		a.log.Warn("App not found", err)
 
 		return "", fmt.Errorf("failed to get app %s: %w", operation, err)
 	}
@@ -98,9 +98,9 @@ func (a Auth) Login(
 
 	token, err = jwt.NewToken(user, app, a.tokenTTL)
 	if err != nil {
-		a.log.Error("Failed to create token", sl.Err(err))
+		a.log.Error("Failed to create token", err)
 
-		return "", fmt.Errorf("failed to create token %s: %w", operation, err2)
+		return "", fmt.Errorf("failed to create token %s: %w", operation, err)
 	}
 
 	return token, nil
@@ -118,7 +118,7 @@ func (a Auth) RegisterNewUser(
 
 	bcryptHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		log.Error("Failed to hash password", operation, sl.Err(err))
+		log.Error("Failed to hash password", operation, err)
 
 		return 0, fmt.Errorf("failed to hash password %s: %w", operation, err)
 	}
@@ -126,12 +126,12 @@ func (a Auth) RegisterNewUser(
 	id, err := a.userSaver.SaveUser(ctx, email, bcryptHash)
 	if err != nil {
 		if errors.Is(err, storage.ErrUserExists) {
-			log.Warn("User already exists", sl.Err(err))
+			log.Warn("User already exists", err)
 
 			return 0, fmt.Errorf("failed to save user %s: %w", operation, ErrUserExists)
 		}
 
-		log.Error("Failed to save user", operation, sl.Err(err))
+		log.Error("Failed to save user", operation, err)
 
 		return 0, fmt.Errorf("failed to save user %s: %w", operation, err)
 	}
@@ -154,11 +154,11 @@ func (a Auth) IsAdmin(ctx context.Context, userID int64) (bool, error) {
 	IsAdmin, err := a.userProvider.IsAdmin(ctx, userID)
 	if err != nil {
 		if errors.Is(err, storage.ErrAppNotFound) {
-			a.log.Warn("App not found", sl.Err(err))
+			a.log.Warn("App not found", err)
 
 			return false, fmt.Errorf("failed to check if user is admin %s: %w", operation, ErrInvalidAppId)
 		}
-		log.Error("Failed to check if user is admin", sl.Err(err))
+		log.Error("Failed to check if user is admin", err)
 
 		return false, fmt.Errorf("failed to check if user is admin %s: %w", operation, err)
 	}

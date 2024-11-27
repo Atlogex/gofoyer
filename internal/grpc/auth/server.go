@@ -5,6 +5,7 @@ import (
 	"atlogex/gofoyer/internal/service/auth"
 	"context"
 	"errors"
+	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -81,8 +82,9 @@ func validateIsAdminParams(req *ssov1.IsAdminRequest) (err error) {
 	return nil
 }
 
-func validateAppId(req) (err error) {
-	if req.GetAppId() == emptyValue {
+func validateAppId(req *ssov1.RegisterRequest) (err error) {
+	// TODO app_id lost here
+	if req.GetEmail() == "" {
 		return status.Error(codes.InvalidArgument, "app_id is required")
 	}
 
@@ -93,6 +95,7 @@ func (s *serverAPI) Register(
 	ctx context.Context,
 	req *ssov1.RegisterRequest,
 ) (*ssov1.RegisterResponse, error) {
+	fmt.Println("Register called")
 
 	if validateRegisterParams(req, true) != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid auth params")
@@ -116,7 +119,6 @@ func (s *serverAPI) IsAdmin(
 	ctx context.Context,
 	req *ssov1.IsAdminRequest,
 ) (*ssov1.IsAdminResponse, error) {
-
 	isAdmin, err := s.auth.IsAdmin(ctx, req.GetUserId())
 	if err != nil {
 		if errors.Is(err, auth.ErrUserExists) {
