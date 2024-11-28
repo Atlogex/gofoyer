@@ -2,18 +2,20 @@ package config
 
 import (
 	"flag"
+	"fmt"
 	"github.com/ilyakaznacheev/cleanenv"
 	"os"
+	"path/filepath"
 	"time"
 )
 
 type Config struct {
 	Env          string        `yaml:"env" env-required:"local"`
-	StoragePath  string        `yaml:"storage_path" env-required:"./storage/gofoyer.db"`
+	StoragePath  string        `yaml:"storage_path" env-required:"./database/gofoyer.db"`
 	GPRC         GRPCConfig    `yaml:"gprc"`
 	TokenTTL     time.Duration `yaml:"token_ttl" env-default:"1h"`
-	GRPCPort     int           `yaml:"grpc_port" env-default:"8045"`
-	GRPCTimeout  string        `yaml:"grpc_timeout"`
+	GRPCPort     int           `yaml:"grpc_port" env-default:"8144"`
+	GRPCTimeout  time.Duration `yaml:"grpc_timeout"`
 	GRPCMaxConns int           `yaml:"grpc_max_conns"`
 }
 
@@ -34,12 +36,17 @@ func MustLoad() *Config {
 }
 
 func MustLoadBypath(path string) *Config {
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		panic("config file does not exist - " + path)
-	}
+	//if _, err := os.Stat(path); os.IsNotExist(err) {
+	//    panic("config file does not exist - " + path)
+	//}
+
+	dir, _ := filepath.Abs("")
+	fullPath := filepath.Join(dir, path)
+	fmt.Println("Configuration dir: ", dir)
+	fmt.Println("Configuration path: ", fullPath)
 
 	var config Config
-	if err := cleanenv.ReadConfig(path, &config); err != nil {
+	if err := cleanenv.ReadConfig(fullPath, &config); err != nil {
 		panic(err)
 	}
 

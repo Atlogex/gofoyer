@@ -27,3 +27,4 @@ go.work.sum
 /database/*
 !/database/.gitignore
 /.idea/
+local_test.yaml

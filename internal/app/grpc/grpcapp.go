@@ -43,14 +43,15 @@ func (app *App) Run() error {
 
 	log.Info("Starting gRPC server", slog.Int("port", app.port))
 
-	listener, error := net.Listen("tcp", fmt.Sprintf(":%d", app.port))
+	listener, error := net.Listen("tcp", fmt.Sprintf("localhost:%d", app.port))
 	if error != nil {
 		log.Error("Failed to listen", operation, error)
 
 		return fmt.Errorf("failed to listen: %w", error)
 	}
 
-	log.Info("grpc server started - ", slog.Int("port", app.port), listener.Addr().String())
+	fmt.Println(listener.Addr().String())
+	log.Info("GRPC server started - ", slog.Int("port", app.port), listener.Addr().String())
 
 	return nil
 }
