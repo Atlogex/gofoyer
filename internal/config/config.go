@@ -9,18 +9,19 @@ import (
 	"time"
 )
 
+// TODO: recheck without defaults
 type Config struct {
-	Env          string        `yaml:"env" env-required:"local"`
-	StoragePath  string        `yaml:"storage_path" env-required:"./database/gofoyer.db"`
+	Env          string        `yaml:"env" env-default:"local"`
+	StoragePath  string        `yaml:"storage_path" env-default:"./database/gofoyer.db"`
 	GPRC         GRPCConfig    `yaml:"gprc"`
 	TokenTTL     time.Duration `yaml:"token_ttl" env-default:"1h"`
 	GRPCPort     int           `yaml:"grpc_port" env-default:"8144"`
-	GRPCTimeout  time.Duration `yaml:"grpc_timeout"`
+	GRPCTimeout  time.Duration `yaml:"grpc_timeout" env-default:"1h"`
 	GRPCMaxConns int           `yaml:"grpc_max_conns"`
 }
 
 type GRPCConfig struct {
-	Port     int    `yaml:"port"`
+	Port     int    `yaml:"port" env-default:"8144"`
 	Timeout  string `yaml:"timeout"`
 	MaxConns int    `yaml:"max_conns"`
 }

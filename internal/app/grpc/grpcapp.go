@@ -20,8 +20,10 @@ func New(
 	port int,
 ) *App {
 
+	fmt.Println("authService", authService)
 	GRPCServer := grpc.NewServer()
 	authgrpc.Register(GRPCServer, authService)
+	fmt.Println("GRPCServer", GRPCServer)
 
 	return &App{
 		log:        log,
@@ -40,7 +42,6 @@ func (app *App) Run() error {
 	const operation = "grpcapp.Run"
 
 	log := app.log.With(slog.String("operation", operation))
-
 	log.Info("Starting gRPC server", slog.Int("port", app.port))
 
 	listener, error := net.Listen("tcp", fmt.Sprintf("localhost:%d", app.port))
@@ -50,7 +51,10 @@ func (app *App) Run() error {
 		return fmt.Errorf("failed to listen: %w", error)
 	}
 
-	fmt.Println(listener.Addr().String())
+	if err := app.gRPCServer.Serve(listener); err != nil {
+		return fmt.Errorf("%s: %w", operation, err)
+	}
+
 	log.Info("GRPC server started - ", slog.Int("port", app.port), listener.Addr().String())
 
 	return nil

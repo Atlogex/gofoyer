@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/mattn/go-sqlite3"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 type Storage struct {
@@ -42,8 +41,7 @@ func (s *Storage) App(ctx context.Context, id int) (models.App, error) {
 func New(storagePath string) (*Storage, error) {
 	const operation = "storage.sqlite.New"
 
-	//db, err := sql.Open("sqlite3", "file:gofoyer.db?_fk=true")
-	db, err := sql.Open("sqlite3", "storagePath")
+	db, err := sql.Open("sqlite3", storagePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database %s: %w", operation, err)
 	}
@@ -58,7 +56,7 @@ func (s *Storage) SaveUser(
 ) (int64, error) {
 	const operation = "storage.sqlite.SaveUser"
 
-	stmt, err := s.db.Prepare(`INSERT INTO users (email, pass_hash) values (?, ?)`)
+	stmt, err := s.db.Prepare("INSERT INTO users (email, pass_hash) values (?, ?)")
 	if err != nil {
 		return 0, fmt.Errorf("failed to prepare statement %s: %w", operation, err)
 	}
@@ -85,7 +83,7 @@ func (s *Storage) SaveUser(
 func (s *Storage) User(ctx context.Context, email string) (models.User, error) {
 	const operation = "storage.sqlite.User"
 
-	stmt, err := s.db.Prepare(`SELECT * FROM users WHERE email = ?`)
+	stmt, err := s.db.Prepare("SELECT id, email, pass_hash FROM users WHERE email = ?")
 	if err != nil {
 		return models.User{}, fmt.Errorf("failed to prepare statement %s: %w", operation, err)
 	}
@@ -108,7 +106,7 @@ func (s *Storage) User(ctx context.Context, email string) (models.User, error) {
 func (s *Storage) IsAdmin(ctx context.Context, userId int64) (bool, error) {
 	const operation = "storage.sqlite.isAdmin"
 
-	stmt, err := s.db.Prepare(`SELECT is_admin FROM users WHERE id = ?`)
+	stmt, err := s.db.Prepare("SELECT is_admin FROM users WHERE id = ?")
 	if err != nil {
 		return false, fmt.Errorf("failed to prepare statement %s: %w", operation, err)
 	}

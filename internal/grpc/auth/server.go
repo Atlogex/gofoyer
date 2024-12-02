@@ -32,6 +32,7 @@ func (s *serverAPI) Login(
 	ctx context.Context,
 	req *ssov1.LoginRequest,
 ) (*ssov1.LoginResponse, error) {
+	fmt.Println("Login called Server API")
 
 	// Add validator method here or use library
 	if req.GetEmail() == "" {
@@ -47,7 +48,9 @@ func (s *serverAPI) Login(
 	token, err := s.auth.Login(ctx, req.GetEmail(), req.GetPassword(), int(req.GetAppId()))
 	if err != nil {
 		if errors.Is(err, auth.ErrInvalidCredentials) {
-			return nil, status.Error(codes.InvalidArgument, "invalid credentials")
+			fmt.Println(err.Error())
+			fmt.Println(errors.Unwrap(err))
+			return nil, status.Error(codes.InvalidArgument, "invalid credentials 23")
 		}
 
 		return nil, status.Error(codes.Internal, "login failed - internal error")

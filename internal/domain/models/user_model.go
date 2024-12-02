@@ -1,10 +1,10 @@
 package models
 
 type User struct {
-	ID        string `json:"id"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Email     string `json:"email"`
-	IsAdmin   bool   `json:"is_admin"`
+	ID        int64
+	FirstName string
+	LastName  string
+	Email     string
+	IsAdmin   bool
 	PassHash  []byte
 }

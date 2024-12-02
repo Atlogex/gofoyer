@@ -21,7 +21,8 @@ func main() {
 
 	fmt.Println(cfg)
 	logger := setupLogger(cfg.Env)
-	logger.Error("Start", slog.String("env", cfg.Env))
+	logger.Info("Start", slog.String("env", cfg.Env))
+	fmt.Printf("Start env:%s GRPCPort: %d DB:%s TTL:%s \n", cfg.Env, cfg.GRPCPort, cfg.StoragePath, cfg.TokenTTL)
 
 	//application := app.New(logger, cfg.GRPCPort, cfg.StoragePath, cfg.TokenTTL)
 	application := app.New(logger, cfg.GRPCPort, cfg.StoragePath, cfg.TokenTTL)

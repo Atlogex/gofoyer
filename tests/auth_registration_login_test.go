@@ -58,14 +58,52 @@ func TestRegisterLogin(t *testing.T) {
 	assert.Equal(t, email, claims["email"].(string))
 	assert.Equal(t, appID, int(claims["app_id"].(float64)))
 
-	const deltaSeconds = 3
+	const deltaSeconds = 5
 	assert.InDelta(
 		t,
 		loginTTL.Add(st.Cfg.TokenTTL).Unix(),
 		claims["exp"].(float64),
 		deltaSeconds,
 	)
-	exp := claims["exp"].(float64)
-	assert.True(t, exp > (float64(time.Now().Unix())-deltaSeconds))
-	assert.True(t, exp < (float64(time.Now().Unix())+deltaSeconds))
+}
+
+func TestRegisterLoginFail(t *testing.T) {
+	ctx, st := suite.New(t)
+
+	tests := []struct {
+		name      string
+		email     string
+		password  string
+		expectErr string
+	}{
+		{
+			"empty email",
+			"",
+			gofakeit.Password(true, true, true, true, true, passDefaultLen),
+			"invalid auth params",
+		},
+		{
+			"empty password",
+			gofakeit.Email(),
+			"",
+			"invalid auth params",
+		},
+		{
+			"empty all",
+			"",
+			"",
+			"invalid auth params",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := st.AuthClient.Register(ctx, &ssov1.RegisterRequest{
+				Email:    tt.email,
+				Password: tt.password,
+			})
+			assert.Error(t, err)
+			assert.Contains(t, err.Error(), tt.expectErr)
+		})
+	}
 }

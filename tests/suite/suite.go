@@ -30,6 +30,12 @@ func New(t *testing.T) (context.Context, *Suite) {
 		cancelCtx()
 	})
 
+	address := grpcAddress(cfg)
+	t.Logf("grpc address: %s", address)
+
+	//cc, err := grpc.NewClient(
+	//    address,
+	//    grpc.WithTransportCredentials(insecure.NewCredentials()))
 	cc, err := grpc.DialContext(context.Background(),
 		grpcAddress(cfg),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))

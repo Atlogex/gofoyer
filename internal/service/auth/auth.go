@@ -74,6 +74,7 @@ func (a Auth) Login(
 
 	user, err := a.userProvider.User(ctx, email)
 	if err != nil {
+		fmt.Println(err)
 		if errors.Is(err, storage.ErrUserNotFound) {
 			a.log.Warn("User not found", err)
 		}
